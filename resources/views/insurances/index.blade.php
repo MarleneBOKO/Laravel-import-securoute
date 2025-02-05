@@ -1,4 +1,6 @@
+@extends('layouts.app')
 
+@section('content')
 <div class="container p-4 mx-auto">
     <div class="bg-white rounded-lg shadow-md">
         <div class="px-4 py-2 border-b">
@@ -46,13 +48,13 @@
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $insurance->assure }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $insurance->telephone }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $insurance->echeance->format('d/m/Y') }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $insurance->echeance }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $insurance->immatriculation }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $insurance->sync_status }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $insurance->statut }}</td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
-        {{ $insurances->links() }}
     </div>
 </div>
+@endsection
