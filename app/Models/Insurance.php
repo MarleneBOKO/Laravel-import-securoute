@@ -10,16 +10,23 @@ class Insurance extends Model
     use HasFactory;
 
     protected $fillable = [
+        'immatriculation',
         'assure',
         'telephone',
         'echeance',
-        'immatriculation',
         'sync_status',
-        'sync_message'
+        'sync_message',
+        'last_sync_attempt'
+    ];
+
+    protected $dates = [
+        'echeance',
+        'last_sync_attempt'
     ];
 
     protected $casts = [
-        'echeance' => 'date'
+        'echeance' => 'date',
+        'last_sync_attempt' => 'datetime'
     ];
 
     public function scopePending($query)

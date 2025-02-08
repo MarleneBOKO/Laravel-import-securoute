@@ -47,6 +47,11 @@
         </form>
 
         <table class="min-w-full mt-4 divide-y divide-gray-200">
+     <button id="syncButton"
+        onclick="startSync()"
+        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4">
+    Synchroniser
+</button>
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Assuré
@@ -100,3 +105,39 @@
     </div>
 </div>
 @endsection
+
+
+<script>
+async function startSync() {
+    const button = document.getElementById('syncButton');
+    button.disabled = true;
+    button.innerText = 'Synchronisation en cours...';
+    button.classList.add('opacity-50');
+
+    try {
+        while (true) {
+            const response = await fetch("{{ route('insurances.sync') }}", {
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            });
+            const data = await response.json();
+
+            if (data.remaining === 0) {
+                break;
+            }
+
+            // Attendre 1 seconde avant la prochaine tentative
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        window.location.reload();
+    } catch (error) {
+        console.error('Erreur de synchronisation:', error);
+    } finally {
+        button.disabled = false;
+        button.innerText = 'Synchroniser';
+        button.classList.remove('opacity-50');
+    }
+}
+</script>

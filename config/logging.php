@@ -54,8 +54,15 @@ return [
 
         'stack' => [
             'driver' => 'stack',
-            'channels' => explode(',', env('LOG_STACK', 'single')),
+            'channels' => ['single', 'mail'], // Ajoutez 'mail' aux canaux
             'ignore_exceptions' => false,
+        ],
+
+        'mail' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/mail.log'),
+            'level' => env('LOG_MAIL_LEVEL', 'debug'),
+            'days' => 14,
         ],
 
         'single' => [

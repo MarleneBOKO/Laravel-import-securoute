@@ -7,6 +7,7 @@ use App\Imports\InsuranceImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use App\Models\Insurance;
+use App\Services\SecurouteApiService;
 
 class InsuranceController extends Controller
 {
@@ -55,9 +56,35 @@ class InsuranceController extends Controller
 
     public function exportSingle($id)
     {
-        $insurance = Insurance::where('id', $id)->get(); 
+        $insurance = Insurance::where('id', $id)->get();
 
         return Excel::download(new InsuranceExport($insurance), 'assurance_' . $insurance->first()->immatriculation . '.xlsx');
+    }
+
+    public function sync(SecurouteApiService $apiService)
+    {
+        try {
+            $result = $apiService->syncPendingInsurances();
+
+            $message = "Synchronisation terminée. ";
+            $message .= "Total: {$result['total']}, ";
+            $message .= "Succès: {$result['success']}, ";
+            $message .= "Échecs: {$result['failed']}, ";
+            $message .= "Déjà assurés: {$result['already_insured']}";
+
+            if ($result['total'] > ($result['success'] + $result['failed'])) {
+                $message .= "\nLa synchronisation n'est pas complète. Veuillez la relancer.";
+                return redirect()->route('insurances.index')
+                    ->with('warning', $message);
+            }
+
+            return redirect()->route('insurances.index')
+                ->with('success', $message);
+
+        } catch (\Exception $e) {
+            return redirect()->route('insurances.index')
+                ->with('error', 'Erreur lors de la synchronisation: ' . $e->getMessage());
+        }
     }
 
 }
